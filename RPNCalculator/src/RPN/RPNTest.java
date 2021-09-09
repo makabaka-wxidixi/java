@@ -18,7 +18,7 @@ public class RPNTest {
 //        //逆波兰计算器
 //        int result = calculator(array);
 //        System.out.println(result);
-//
+
 //        //(3+4)*5-6  =>   3 4 + 5 * 6 -
 //        expression = "(3+4)*5-6";
 //        List list = arraysOrder(expression);//得到中序的集合
@@ -27,13 +27,14 @@ public class RPNTest {
 //        String s = reversalOrder(list);
 //        System.out.println(s);
 
-        String test = "3+(5+(9-2))*4";
+        String test = "3.1+(5+(9.6-2))*4";
         //用集合存储
         List<String> listTest = arraysOrder(test);
         //逆序表达式
         List s = reversalOrder(listTest);
         //计算器
-        System.out.println(calculator(s));
+        double calculator = calculator(s);
+        System.out.println(calculator);
     }
 
     private static List reversalOrder(List<String> tempList) {
@@ -43,7 +44,7 @@ public class RPNTest {
         Stack<String> stack = new Stack<>();
         //遍历每一个集合中的数据
         for (String str : tempList) {
-            if (str.matches("\\d+")) {
+            if (str.matches("\\d+") || str.matches("\\d+\\.\\d+")) {
                 //遇到数，就录入list
                 list.add(str);
             } else { //遇到运算符
@@ -119,7 +120,7 @@ public class RPNTest {
         //将expression存到ArrayList中
         String str = "";
         int index = 0;
-        ArrayList<String> list = new ArrayList<String>();
+        ArrayList<String> list = new ArrayList();
         do {
             //下一个字符
             String ch = expression.substring(index, index + 1);
@@ -134,7 +135,7 @@ public class RPNTest {
                     str += ch;
                     index++;
                     //不是最后一个字符，并且下一个还是数字，就进行循环
-                } while ((index < expression.length()) && expression.charAt(index) <= 57 && expression.charAt(index) >= 48);
+                } while ((index < expression.length()) && ((expression.charAt(index) <= 57 && expression.charAt(index) >= 48) || '.' == expression.charAt(index)));
                 //录入list中
                 list.add(str);
                 str = "";
@@ -157,31 +158,31 @@ public class RPNTest {
     }
 
     //逆波兰计算器
-    public static int calculator(List<String> arr) {
+    public static double calculator(List<String> arr) {
         //从左到右，遇到数字就入栈，遇到运算符就弹出两个数据，然后：后弹出的-先弹出的，再将结果入栈
         //遍历数组
         Stack<String> stack = new Stack<String>();
-        int num1;
-        int num2;
+        double num1;
+        double num2;
         String ret;
         for (String str : arr) {
             //如果是数字，入栈
-            if (str.matches("\\d+")) {
+            if (str.matches("\\d+") || str.matches("\\d+\\.\\d+")) {
                 stack.push(str);
             } else {
                 //如果是运算符就弹出两个数据，并做运算，然后再压入栈中
-                num1 = Integer.parseInt(stack.pop());
-                num2 = Integer.parseInt(stack.pop());
+                num1 = Double.parseDouble(stack.pop());
+                num2 = Double.parseDouble(stack.pop());
                 ret = operation(num1, num2, str) + "";
                 stack.push(ret);
             }
         }
         //最后栈中剩一个元素，就是结果
-        return Integer.parseInt(stack.pop());
+        return Double.parseDouble(stack.pop());
     }
 
-    static int operation(int num1, int num2, String str) {
-        int result = 0;
+    static double operation(double num1, double num2, String str) {
+        double result = 0;
         switch (str) {
             case "+":
                 result = num1 + num2;
