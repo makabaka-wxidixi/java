@@ -7,7 +7,7 @@ import java.util.Scanner;
  */
 public class circleQueue {
     public static void main(String[] args) {
-        arrayQueue queue = new arrayQueue(4);
+        arrayQueue<String> queue = new arrayQueue(4);
         Scanner scanner = new Scanner(System.in);
         boolean flag = true;
         char key = ' ';
@@ -20,7 +20,7 @@ public class circleQueue {
             switch (key) {
                 case 'a':
                     System.out.println("请输入要添加的数据");
-                    int value = scanner.nextInt();
+                    String value = scanner.next();
                     try {
                         queue.addQueue(value);
                     } catch (Exception e) {
@@ -28,9 +28,9 @@ public class circleQueue {
                     }
                     break;
                 case 'g':
-                    int queue1 = 0;
                     try {
-                        queue1 = queue.getQueue();
+                        String queue1 = queue.getQueue();
+                        System.out.println(queue1);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -52,21 +52,21 @@ public class circleQueue {
     }
 }
 
-class arrayQueue {
+class arrayQueue<T> {
     private int maxSize;
     private int rear;
     private int front;
-    private int[] arr;
+    private T[] arr;
 
     public arrayQueue(int maxSize) {
         this.maxSize = maxSize;
-        arr = new int[maxSize];
+        arr = (T[]) new Object[maxSize];
     }
 
     public void printQueue() {
         int count = 0;
         for (int i = front; i < front + number(); i++) {
-            System.out.println("arr["+(count++)+ "]=" + arr[i % maxSize]);
+            System.out.println("arr[" + (count++) + "]=" + arr[i % maxSize]);
         }
     }
 
@@ -82,7 +82,7 @@ class arrayQueue {
         return (rear + maxSize - front) % maxSize;
     }
 
-    public void addQueue(int add) throws RuntimeException {
+    public void addQueue(T add) throws RuntimeException {
         if (isFull()) {
             throw new RuntimeException("队列已满，无法添加数据");
         } else {
@@ -91,11 +91,11 @@ class arrayQueue {
         }
     }
 
-    public int getQueue() throws RuntimeException {
+    public T getQueue() throws RuntimeException {
         if (isEmpty()) {
             throw new RuntimeException("队列以空，无法取出数据");
         } else {
-            int get = arr[front];
+            T get = arr[front];
             front = (front + 1) % maxSize;
             return get;
         }
