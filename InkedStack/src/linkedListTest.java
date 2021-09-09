@@ -1,4 +1,4 @@
-
+import java.util.LinkedList;
 
 /**
  * @Author mkbk
@@ -7,44 +7,52 @@
  */
 public class linkedListTest {
     public static void main(String[] args) {
-        linkedList linkedList = new linkedList();
-        linkedList.push(new Person("亚索", 23));
-        linkedList.push(new Person("永恩", 24));
-        linkedList.push(new Person("石头人", 25));
-        linkedList.push(new Person("塞拉斯", 26));
-        System.out.println(linkedList.size());
-        linkedList.list();
-        linkedList.pop();
-        System.out.println(linkedList.size());
-        linkedList.list();
-        System.out.println("--------------");
-        linkedList.clear();
-        System.out.println(linkedList.size());
-        System.out.println(linkedList.isEmpty());
+//        linkedList linkedList = new linkedList();
+//        linkedList.push(new Person("亚索", 23));
+//        linkedList.push(new Person("永恩", 24));
+//        linkedList.push(new Person("石头人", 25));
+//        linkedList.push(new Person("塞拉斯", 26));
+//        System.out.println(linkedList.size());
+//        linkedList.list();
+//        linkedList.pop();
+//        System.out.println(linkedList.size());
+//        linkedList.list();
+//        System.out.println("--------------");
+//        linkedList.clear();
+//        System.out.println(linkedList.size());
+//        System.out.println(linkedList.isEmpty());
+
+        linkedList<String> list = new linkedList<>();
+        list.push("我是你爸爸");
+        list.push("真伟大");
+        list.push("养你这么大");
+        list.push("你还不听话");
+        list.list();
+
     }
 }
 
-class linkedList {
-    private Node base;
-    private Node top;
+class linkedList<T> {
+    private Node<T> base;
+    private Node<T> top;
     private int count = 0;
 
     linkedList() {
-        Node node = new Node();
+        Node<T> node = new Node();
         base = node;
         top = node;
         base.data = null;
     }
 
-    void push(Object obj) {
-        Node newNode = new Node();
+    void push(T obj) {
+        Node<T> newNode = new Node();
         newNode.data = obj;
         newNode.next = top;
         top = newNode;
         count++;
     }
 
-    Object pop() {
+    T pop() {
         if (isEmpty()) {
             try {
                 throw new RuntimeException("栈空");
@@ -52,7 +60,7 @@ class linkedList {
                 e.printStackTrace();
             }
         }
-        Object ret = top.data;
+        T ret = top.data;
         top = top.next;
         count--;
         return ret;
@@ -62,7 +70,7 @@ class linkedList {
         if (isEmpty()) {
             return;
         }
-        Node temp = top;
+        Node<T> temp = top;
         while (true) {
             if (temp == base) {
                 return;
@@ -79,7 +87,7 @@ class linkedList {
         return false;
     }
 
-    Object getTop() {
+    T getTop() {
         return top.data;
     }
 
@@ -96,9 +104,9 @@ class linkedList {
     }
 }
 
-class Node {
+class Node<T> {
     Node next;
-    public Object data;
+    public T data;
 }
 
 class Person {
