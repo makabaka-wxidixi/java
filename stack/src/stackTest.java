@@ -11,7 +11,7 @@ import java.util.Scanner;
 public class stackTest {
 
     public static void main(String[] args) {
-        Stack stack = new Stack(5);
+        Stack<String> stack = new Stack<>(5);
         Scanner scanner = new Scanner(System.in);
         String key = "";
         while (true) {
@@ -24,9 +24,8 @@ public class stackTest {
             switch (key) {
                 case "push":
                     System.out.println("请输入要压入的数据");
-                    int i = scanner.nextInt();
                     try {
-                        stack.push(i);
+                        stack.push(scanner.next());
                     } catch (Exception e) {
                         System.out.println(e.getMessage());
                     }
@@ -53,14 +52,14 @@ public class stackTest {
     }
 }
 
-class Stack {
-    private int[] arr;
+class Stack<T> {
+    private T[] arr;
     private int maxsize;
     private int top = -1;
 
     public Stack(int maxsize) {
         this.maxsize = maxsize;
-        arr = new int[maxsize];
+        arr = (T[]) new Object[maxsize];
     }
 
     public int getMaxsize() {
@@ -82,7 +81,7 @@ class Stack {
     }
 
     //入栈
-    void push(int sum) throws RuntimeException {
+    void push(T sum) throws RuntimeException {
         if (isFull()) {
             throw new RuntimeException("栈满");
         }
@@ -90,7 +89,7 @@ class Stack {
     }
 
     //出栈
-    int pop() throws RuntimeException {
+    T pop() throws RuntimeException {
         if (isEmpty()) {
             throw new RuntimeException("栈空");
         }
@@ -103,7 +102,7 @@ class Stack {
             return;
         }
         for (int i = top; i >= 0; i--) {
-            System.out.println("arr["+i+"]=" + arr[i]);
+            System.out.println("arr[" + i + "]=" + arr[i]);
         }
     }
 }
