@@ -5,38 +5,47 @@
  */
 public class CalculatorTest {
     public static void main(String[] args) {
-        Stack numStack = new Stack(10);//数栈
-        Stack operStack = new Stack(10);//符号栈
         //表达式
-        String expression = "50+23*1*4-3";
+        String expression = "5+2*1*4-30";
+        System.out.println(expression.length());
+
+        Stack<Double> numStack = new Stack(10);//数栈
+        Stack<Character> operStack = new Stack(10);//符号栈
         char ch;
         char oper;
-        int num1;
-        int num2;
+        Double num1;
+        Double num2;
         int index = 0;
-        int operation;
+        Double operation;
         String num = "";
         while (true) {
             //得到字符
             ch = expression.substring(index, index + 1).charAt(0);
             if (!numStack.isOper(ch)) {
-                //如果是数，就入栈
-                num += ch;
-                //看看下一个是不是数字
-                if (index == (expression.length() - 1) || numStack.isOper(expression.substring(index + 1, index + 2).charAt(0))) {
-                    int i = Integer.parseInt(num);
-                    numStack.push(i);
-                    num = "";
+                while (true) {
+                    num += ch;
+                    //当index等于表达式的最大长度（代表遍历完毕）或者表达式下一位是运算符，就入栈并结束循环
+                    if ((index == (expression.length() - 1)) || numStack.isOper(expression.substring(index + 1, index + 2).charAt(0))) {
+                        numStack.push(Double.parseDouble(num));
+                        index++;
+                        num = "";
+                        break;
+                    } else {
+                        index++;
+                        ch = expression.substring(index, index + 1).charAt(0);
+                    }
                 }
             } else {
                 //如果是符号就进行判断
                 if (operStack.isEmpty()) {
                     //如果是第一个符号，就直接入符号栈
                     operStack.push(ch);
+                    index++;
                 } else {
-                    if (operStack.priority(ch)) {
+                    if (operStack.getPriority(operStack.getTop()) < operStack.getPriority(ch)) {
                         //否则，就和栈顶元素进行比较，如果优先级大于符号栈顶元素，就直接入栈
                         operStack.push(ch);
+                        index++;
                     } else {
                         //如果优先级小于等于符号栈顶元素，就从数栈中出两个数，从符号栈中出一个，进行运算
                         //运算结果再入数栈，将符号入符号栈
@@ -46,13 +55,13 @@ public class CalculatorTest {
                         operation = numStack.operation(num1, num2, oper);
                         numStack.push(operation);//新数据压入数栈
                         operStack.push(ch);//符号入栈
+                        index++;
                     }
                 }
             }
-            if (index == expression.length() - 1) {
+            if (index > expression.length() - 1) {
                 break;
             }
-            index++;
         }
         while (true) {
             if (operStack.isEmpty()) {
@@ -66,19 +75,18 @@ public class CalculatorTest {
             numStack.push(operation);
         }
         //最后数栈中还剩一个元素，这就是结果
-        int pop = numStack.pop();
-        System.out.println(pop);
+        System.out.println(numStack.pop());
     }
 }
 
-class Stack {
-    private int[] arr;
+class Stack<T> {
+    private T[] arr;
     private int maxSize;
     private int top = -1;
 
     public Stack(int maxSize) {
         this.maxSize = maxSize;
-        arr = new int[maxSize];
+        arr = (T[]) new Object[maxSize];
     }
 
     boolean isFull() {
@@ -100,34 +108,56 @@ class Stack {
         return ch == '-' || ch == '+' || ch == '*' || ch == '/';
     }
 
-    //比较优先级
-    boolean priority(char ch) {
-        if (ch == '*' || ch == '/') {
-            if (getTop() == '+' || getTop() == '-') {
-                return true;
-            } else {
-                return false;
-            }
+//    //比较优先级
+//    boolean priority(char ch) {
+//        if (ch == '*' || ch == '/') {
+//            if (getTop() == '+' || getTop() == '-') {
+//                return true;
+//            } else {
+//                return false;
+//            }
+//        }
+//        return false;
+//    }
+
+    private static final int ADD = 1;
+    private static final int SUB = 1;
+    private static final int MUL = 2;
+    private static final int DIV = 2;
+
+    int getPriority(char ch) {
+        switch (ch) {
+            case '+':
+                return ADD;
+            case '-':
+                return SUB;
+            case '*':
+                return MUL;
+            case '/':
+                return DIV;
+            default:
+                return 0;
         }
-        return false;
     }
 
     //得到栈顶元素
-    char getTop() {
-        return (char) arr[top];
+    T getTop() {
+        return arr[top];
     }
 
-    int operation(int num1, int num2, char ch) {
+    public <T extends Number> double operation(T num1, T num2, char ch) {
+        double one = num1.doubleValue();
+        double two = num2.doubleValue();
         if (isOper(ch)) {
             switch (ch) {
                 case '+':
-                    return num1 + num2;
+                    return one + two;
                 case '-':
-                    return num2 - num1;
+                    return two - one;
                 case '*':
-                    return num1 * num2;
+                    return one * two;
                 case '/':
-                    return num2 / num1;
+                    return two / one;
             }
         } else {
             try {
@@ -136,30 +166,38 @@ class Stack {
                 e.printStackTrace();
             }
         }
-        return -999;
+        return 0.0;
     }
 
-
-    void push(int ch) {
+    void push(T ch) {
         if (isFull()) {
-            System.out.println("栈满");
-            return;
+            try {
+                throw new RuntimeException("栈满");
+            } catch (RuntimeException e) {
+                e.printStackTrace();
+            }
         }
         arr[++top] = ch;
     }
 
-    char pop() {
-        try {
-            if (isEmpty()) ;
-        } catch (Exception e) {
-            e.printStackTrace();
+    T pop() {
+        if (isEmpty()) {
+            try {
+                throw new RuntimeException("栈空");
+            } catch (RuntimeException e) {
+                e.printStackTrace();
+            }
         }
-        return (char) arr[top--];
+        return arr[top--];
     }
 
     void list() {
         if (isEmpty()) {
-            return;
+            try {
+                throw new RuntimeException("栈空");
+            } catch (RuntimeException e) {
+                e.printStackTrace();
+            }
         }
         for (int i = top; i >= 0; i--) {
             System.out.println("arr[" + i + "]=" + arr[i]);
